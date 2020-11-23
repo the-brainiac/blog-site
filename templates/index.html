@@ -1,0 +1,100 @@
+{% load static %}
+{% load humanize %} <!-- https://docs.djangoproject.com/en/3.0/ref/contrib/humanize -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shivshanker's Personal Blog Site</title>
+   <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/media-queries.css' %}">
+    <script
+      src="https://kit.fontawesome.com/67bc463eb8.js"
+      crossorigin="anonymous"
+    ></script>
+    {% block head %}
+    {% endblock %}
+</head>
+<body>
+   <!-- Header
+   ================================================== -->
+   <header>
+
+      <div class="row">
+
+         <div class="twelve columns">
+            <!-- <div class="logo">
+               <a href="index.html"><h3>My Blog</h3></a>
+            </div> -->
+            <nav id="nav-wrap">
+
+               <a class="mobile-btn" href="#nav-wrap" title="Show navigation">Show navigation</a>
+               <a class="mobile-btn" href="#" title="Hide navigation">Hide navigation</a>
+
+               <ul id="nav" class="nav">
+
+                  <li class="{% if request.path == '/' %} current {% endif %}"><a href="{% url 'blogs:all' %}">Home</a></li>
+                  <!-- <li class="{% if request.path == '/about/' %} current {% endif %}"><a href="#">About</a></li> -->
+                  <li class="{% if request.path == '/user/contact/' %} current {% endif %}"><a href="{% url 'user:contact' %}">Contact</a></li>
+                  {% if user.is_authenticated %}
+                  <li class="{% if request.path == '/blog/create' %} current {% endif %}">
+                     <a href="{% url 'blogs:create' %}">Create Blog</a>
+                  </li>
+                  <li class="dropdown">
+                     <a href="{% url 'user:profile' %}" data-toggle="dropdown" class="dropdown-toggle">
+                        <img style="width: 25px;" src="{% if user.person.profile_pic %} {{user.person.profile_pic.url}} {% else %}{% static 'images/profile_pic.jpg' %} {% endif %}"/><b class="caret"></b>
+                     </a>
+                     <ul class="dropdown-menu">
+                       <li><a href="{% url 'user:logout' %}?next={% url 'blogs:all' %}">Logout</a></li>
+                     </ul>
+                  </li>
+                  {% else %}
+                  <li class="{% if request.path == '/user/login/' or request.path == '/user/signup/' %} current {% endif %}">
+                     <a href="{% url 'user:login' %}?next={% url 'blogs:all' %}">Login</a>
+                  </li>
+                  {% endif %}
+               </ul> <!-- end #nav -->
+            </nav> <!-- end #nav-wrap -->
+         </div>
+      </div>
+   </header> <!-- Header End -->
+   {% if messages %}
+   <div class="message" style="background-color: rgb(132, 230, 201); text-align: center; font-size: 20px; color:white; padding: 5px;">
+      {% for message in messages %}
+      <span>
+         {{ message }}
+      </span>
+      {% endfor %}
+   </div>
+   {% endif %}
+   <div>
+      {% block content %}
+      {% endblock %}
+   </div>
+
+ <!-- footer
+   ================================================== -->
+   <footer>
+
+      <div class="row">
+
+         <div class="twelve columns">
+            <ul class="footer-social">
+               <li><a href="https://github.com/the-brainiac" target="_blank"><i class="fa fa-github"></i></a></li>
+               <li><a href="https://www.linkedin.com/in/the-brainiac/" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+               <li><a href="https://www.hackerrank.com/the_brainiac_/" target="_blank"><i class="fab fa-hackerrank"></i></a></li>
+            </ul>
+
+            <ul class="copyright">
+               <li>Copyright &copy; 2020 Shivshanker Singh</li> 
+               <li>Designed by Shivshanker Singh</li>               
+            </ul>
+         </div>
+      </div>
+   </footer> <!-- Footer End-->
+
+</body>
+</html>

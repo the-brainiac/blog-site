@@ -1,0 +1,130 @@
+{% extends "index.html" %}
+{% block content %}
+{% load static %}
+
+
+<!-- Page Title
+   ================================================== -->
+   <div id="page-title">
+    <div class="row">
+      <div class="ten columns centered text-center">
+        <h1>{{blog.title}}<span>.</span></h1>
+
+        <p>
+          {{blog.description}}
+        </p>
+      </div>
+    </div>
+  </div>
+  <!-- Page Title End-->
+
+  <!-- Content
+    ================================================== -->
+  <div class="content-outer">
+    <div id="page-content" class="row">
+      <div id="primary" class="eight columns">
+        <article class="post">
+          <div class="entry-header cf">
+
+            <p class="post-meta">
+              Created : 
+              <time class="date" datetime="2014-01-14T11:24"
+                >{{blog.created_at}}</time
+              >
+              /
+              Last Edit : 
+              <time class="date" datetime="2014-01-14T11:24"
+                >{{blog.updated_at}}</time
+              >
+              /Created By: <strong>{{blog.owner.username}}</strong>
+              <span class="categories">
+                {% if blog.owner == user %}
+                  /<a href="{% url 'blogs:update' blog.id %}"><i class="fa fa-pencil"></i></a>/
+                  <a href="{% url 'blogs:delete' blog.id %}"><i class="fa fa-trash"></i></a>
+                {% endif %}
+
+              </span>
+            </p>
+          </div>
+
+          <div class="post-thumb">
+            <img
+              src="{{blog.thumbnail.url}}"
+              alt="post-image"
+              title="post-image"
+              width="100%"
+            />
+          </div>
+
+          <div class="post-content">
+            <p class="lead">
+              {{blog.body|safe}}
+            </p>
+          </div>
+        </article>
+        <!-- post end -->
+
+        <!-- Comments
+          ================================================== -->
+        <div id="comments">
+          <h3>{{blog.comment_count}}  Comments</h3>
+          <!-- commentlist -->
+          <ol class="commentlist">
+            {% for comment in comments %}
+            <li class="depth-1">
+              <div class="avatar">
+                <img
+                  width="50"
+                  height="50"
+                  class="avatar"
+                  src="{% if comment.owner.person.profile_pic %} {{comment.owner.person.profile_pic.url}} {% else %}{% static 'images/profile_pic.jpg' %} {% endif %}"
+                  alt=""
+                />
+              </div>
+
+              <div class="comment-info">
+                <cite>{{comment.owner.username}}</cite>
+
+                <div class="comment-meta">
+                  <time class="comment-time" datetime="2014-01-14T23:05"
+                    >{{comment.updated_at}}</time
+                  >
+                  {% if user == comment.owner %}
+                  <span class="sep">/</span>
+                      <a href="{% url 'blogs:comment_delete' comment.id %}"><i class="fa fa-trash"></i></a>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="comment-text">
+                <p>
+                  {{comment.text}}
+                </p>
+              </div>
+            </li>
+            {% endfor %}
+          </ol>
+          <!-- Commentlist End -->
+          <!-- respond -->
+          <div id="blog-comment" class="respond">
+            <h3>Leave a Comment</h3>
+            <!-- form -->
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'blogs:comment_create' blog.id %}">
+              {% csrf_token %}
+              {{comment_form.comment}}
+              <button type="submit" class="btn solid">Comment</button>
+            </form>
+            {% else %}
+              <h3>Please Login to Comment</h3>
+            {% endif %}
+            <!-- Form End -->
+          </div>
+          <!-- Respond End -->
+        </div>
+        <!-- Comments End -->
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "index.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<p>
+  <div class='create-blog'>
+  <form action="" method="post" id="upload_form" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{form.media}}
+    {{ form.as_table }}
+        <input type="submit" value="Submit" class="btn solid inline">
+        <input type="submit" value="Cancel" class="btn solid inline" onclick="window.location.href='{% url 'blogs:all' %}'; return false;">
+  </form>
+</div>
+</p>
+{% endblock %}

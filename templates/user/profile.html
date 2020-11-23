@@ -1,0 +1,115 @@
+{% extends "index.html" %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/w3.css' %}">
+<style>
+    #profile_update_form a{
+        color:blue;
+    }
+    #profile_update_form label{
+        color: darkslateblue;
+        font-size: 16px;
+        margin-top: 10px;
+        margin-left: 20px;
+    }
+    form {
+        display: block;
+        padding: 5%;
+    }
+</style>
+{% endblock %}
+{% block content %}    
+<div class="w3-row">
+
+  <!-- Blog entries -->
+  <div class="w3-col l8 s12">
+    <!-- Blog entry -->
+    <div class="w3-card w3-margin w3-margin-top w3-white">
+        <form action="" id="profile_update_form" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% for field in user_form %}
+            <label for="">{{field.label}}:</label>
+            <div class="input-field">
+                {% if field == user_form.email %}
+                <i class="fas fa-envelope"></i>
+                {% elif field == user_form.username %}
+                <i class="fas fa-user"></i>
+                {% elif field == user_form.first_name or field == user_form.last_name %}
+                <i class="fas fa-signature"></i>
+                {% endif %}
+                  {{field}}
+              </div>
+              <div class="error-text">
+                <span>
+                    {{field.errors}}
+                </span>
+            </div>
+            {% endfor %}
+            {{pic_form}}
+            <br>
+            <input type="submit" value="Update" class="btn solid">
+        </form>
+    </div>
+  <!-- END BLOG ENTRIES -->
+  </div>
+  
+  <!-- Introduction menu -->
+  <div class="w3-col l4">
+    <!-- About Card -->
+    {% if user.is_authenticated %}
+    <div class="w3-card w3-margin w3-margin-top">
+    <img src="{% if user.person.profile_pic %}{{user.person.profile_pic.url}}{% else %}{% static 'images/profile_pic.jpg' %}{% endif %}" style="width:100%">
+      <div class="w3-container w3-white">
+        <h2 style="text-align: center;"><b>{{user.username}}</b></h2>
+          <input type="submit" class="btn__profile" value="Change Password" onclick="window.location.href='{% url 'user:password_change' %}?next={% url 'blogs:all' %}'; return false;">
+          <input type="submit" class="btn__profile" value="Back to Blogs" onclick="window.location.href='{% url 'blogs:all' %}'; return false;">
+      </div>
+    </div><hr>
+    {% endif %}
+    
+    <!-- Posts -->
+    <div class="w3-card w3-margin">
+      <div class="w3-container w3-padding">
+        <h4>Your Blogs</h4>
+      </div>
+      <ul class="w3-ul w3-hoverable w3-white">
+        {% if your_blogs %}
+        {% for blog in your_blogs %}
+        <a style="text-decoration: none;" href="{% url 'blogs:detail' blog.id %}">
+        <li class="w3-padding-16">
+            <img src="{{blog.thumbnail.url}}" alt="Image" class="w3-left w3-margin-right" style="width:50px; height:50px">
+            <span class="w3-large">{{blog.title}}</span><br>
+            <span>
+              <strong><i class="far fa-comments fa-2x"></i></strong>
+              <span class="w3-tag"> {{blog.comment_count}}</span>
+            </span>
+            <span>
+              <strong><i class="far fa-star fa-2x"></i></strong>
+              <span class="w3-tag"> {{blog.fav_count}}</span>
+            </span>
+          </li> 
+        </a>
+        {% endfor %}
+        <input type="submit" class="btn__profile" value="View All" onclick="window.location.href='{% url 'user:user_blogs' %}'; return false;">
+        {% else %}
+          <span>You havent created any Blog yet, want to create one ...?</span>
+          <input type="submit" class="btn__profile" value="Create Blog" onclick="window.location.href='{% url 'blogs:create' %}'; return false;">
+        {% endif %}
+      </ul>
+    </div>
+    <hr> 
+   
+    
+    
+  <!-- END Introduction Menu -->
+  </div>
+  
+  <!-- END GRID -->
+  </div><br>
+  
+  <!-- END w3-content -->
+  </div>
+  
+
+
+{% endblock %}

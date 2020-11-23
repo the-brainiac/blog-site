@@ -1,0 +1,182 @@
+{% extends "index.html" %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/w3.css' %}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
+
+<style>
+  .search-box{
+    display: block;
+    /* margin: 0; */
+    padding: 10px;
+  }
+  .search-box input[type=text]{
+    padding: 18px 15px;
+    border: 0;
+    outline: none;
+    height: 50px;
+    min-height: 50px;
+    min-width: 260px;
+    font-size: 15px;
+    line-height: 24px;
+    color: #647373;
+    background: #d3d9d9;
+  }
+  .search-box button[type=submit], .search-box a{
+    text-align: center;
+    padding: 15px 15px;
+    border: 0;
+    outline: none;
+    height: 50px;
+    color: #647373;
+    background: #d3d9d9;
+  }
+</style>
+{% endblock %}
+{% block content %}    
+<div class="w3-row">
+
+  <!-- Blog entries -->
+  <div class="w3-col l8 s12">
+    <!-- Blog entry -->
+    {% for blog in blog_list %}
+    <div class="w3-card-4 w3-margin w3-white">
+      <img src="{{blog.thumbnail.url}}" alt="Nature" style="width:100%; max-height: 350px;">
+      <div class="w3-container">
+        <h3><b>{{blog.title}}</b></h3>
+        <h5>{{blog.description}}, 
+          <span style="float: right;" class="w3-opacity">
+            ({{ blog.updated_at }})
+            {% if blog.owner == user %}
+            <a href="{% url 'blogs:update' blog.id %}"><i class="fa fa-pencil"></i></a>
+            <a href="{% url 'blogs:delete' blog.id %}"><i class="fa fa-trash"></i></a>
+            {% endif %}
+            </span>
+        </h5>
+      </div>
+  
+      <div class="w3-container">
+        <div class="w3-row">
+          <div class="w3-col m8 s12">
+            <a href="{% url 'blogs:detail' blog.id %}"><button class="btn solid"><b>READ MORE »</b></button></a>
+          </div>
+          <div style="display: flex; text-align: right; justify-content: flex-end;" class="w3-col m4 w3-hide-small">
+              <span class="w3-padding-large w3-right">
+                <a href="{% url 'blogs:detail' blog.id %}#blog-comment">
+                  <span>
+                    <strong><i class="far fa-comments fa-2x"></i></strong>
+                    <span class="w3-tag"> {{blog.comment_count}}</span>
+                  </span>
+                </a>
+                {% if user.is_authenticated %}
+                <!-- Two hrefs with two stacked icons each - one showing and one hidden -->
+                <a href="#" onclick="favPost('{% url 'blogs:unfavorite' blog.id %}', {{ blog.id }} );return false;" {% if blog.id not in favorites %} style="display: none;" {% endif %} id="favorite_star_{{blog.id}}">
+                  <span class="fa-stack">
+                    <i class="fa fa-star fa-stack-2x" style="color: yellow;"></i>
+                    <i class="fa fa-star-o fa-stack-2x"></i>
+                  </span>
+                </a>
+                <!-- the second href -->
+                <a href="#" onclick="favPost('{% url 'blogs:favorite' blog.id %}', {{ blog.id }} );return false;" {% if blog.id in favorites %} style="display: none;" {% endif %} id="unfavorite_star_{{blog.id}}">
+                  <span class="fa-stack">
+                    <i class="fa fa-star fa-stack-2x" style="display: none; color: yellow;"></i>
+                    <i class="fa fa-star-o fa-stack-2x"></i>
+                  </span>
+                </a>
+                <span class="w3-tag">{{blog.fav_count}}</span>
+                {% endif %}
+              </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr>
+    {% endfor %}
+  <!-- END BLOG ENTRIES -->
+  </div>
+  
+  <!-- Introduction menu -->
+  <div class="w3-col l4">
+
+    <!-- Search Box -->
+    <div class="w3-card w3-margin w3-margin-top">
+      <div class="w3-container w3-padding">
+        <h4 style="font-weight: bold;">Search this Site</h4>
+      </div>  
+      <ul class="w3-ul w3-white">
+        <li class="w3-padding-16">
+          <form class="search-box">
+            <input type="text" placeholder="Search.." name="search"
+            {% if search %} value="{{ search }}" {% endif %}
+            >
+            <button type="submit"><i class="fa fa-search"></i></button>
+          <a href="{% url 'blogs:all' %}"><i class="fa fa-undo"></i></a>
+          </form>
+        </li>
+      </ul>
+    </div><hr>
+
+    <!-- About Card -->
+    {% if user.is_authenticated %}
+    <div class="w3-card w3-margin w3-margin-top">
+    <img src="{% if user.person.profile_pic %}{{user.person.profile_pic.url}}{% else %}{% static 'images/profile_pic.jpg' %}{% endif %}" style="width:100%">
+      <div class="w3-container w3-white">
+        <h2 style="text-align: center;"><b>{{user.username}}</b></h2>
+          <input type="submit" class="btn__profile" value="Change Password" onclick="window.location.href='{% url 'user:password_change' %}?next={% url 'blogs:all' %}'; return false;">
+          <input type="submit" class="btn__profile" value="View Profile" onclick="window.location.href='{% url 'user:profile' %}'; return false;">
+      </div>
+    </div><hr>
+    {% endif %}
+    
+    <!-- Posts -->
+    <div class="w3-card w3-margin">
+      <div class="w3-container w3-padding">
+        <h4>Trending Blogs</h4>
+      </div>
+      <ul class="w3-ul w3-hoverable w3-white">
+        {% for blog in trending_blogs %}
+        <a style="text-decoration: none;" href="{% url 'blogs:detail' blog.id %}">
+        <li class="w3-padding-16">
+            <img src="{{blog.thumbnail.url}}" alt="Image" class="w3-left w3-margin-right" style="width:50px; height:50px">
+            <span class="w3-large">{{blog.title}}</span><br>
+            <span>
+              <strong><i class="far fa-comments fa-2x"></i></strong>
+              <span class="w3-tag"> {{blog.comment_count}}</span>
+            </span>
+            <span>
+              <strong><i class="far fa-star fa-2x"></i></strong>
+              <span class="w3-tag"> {{blog.fav_count}}</span>
+            </span>
+          </li> 
+        </a>
+        {% endfor %}
+      </ul>
+    </div>
+    <hr> 
+   
+    
+    
+  <!-- END Introduction Menu -->
+  </div>
+  
+  <!-- END GRID -->
+  </div><br>
+  
+  <!-- END w3-content -->
+  </div>
+  
+
+  <script>
+    function favPost(url, blog_id) {
+        console.log('Requesting JSON');
+        $.post(url, {},  function(rowz){
+            console.log(url, 'finished');
+            $("#unfavorite_star_"+blog_id).toggle();
+            $("#favorite_star_"+blog_id).toggle();
+        }).fail(function(xhr) {
+            alert('Url failed with '+xhr.status+' '+url);
+        });
+    }
+    </script>
+
+{% endblock %}

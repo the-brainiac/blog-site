@@ -1,0 +1,16 @@
+{% extends "index.html" %}
+{% block content %}
+<div style="width: 90%; margin: auto; padding: 20px;">
+
+  <h1>Delete Comment</h1>
+  
+  <p>Are you sure you want to delete</p>
+  <p>{{ comment.text }}?</p>
+  
+  <form action="" method="POST">
+    {% csrf_token %}
+    <input type="submit"  class="btn btn-primary" value="Yes, delete">
+    <input type="submit"  class="btn btn-primary" value="Cancel" onclick="window.location.href='{% url 'blogs:detail' comment.blog.id %}'; return false;">
+  </form>
+</div>
+{% endblock %}
