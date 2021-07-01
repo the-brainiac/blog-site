@@ -10,7 +10,7 @@
 ![](https://img.shields.io/badge/jquery%20-%231572B6.svg?&style=for-the-badge&logo=jquery&logoColor=white)
 
 ## [Live Demo](https://blogsite.pythonanywhere.com/)
-I built this web app for better understanding of foreign keys and one to one, many to many relationships.
+I built this web app for better understanding of foreign keys and one to one, many to many relationships. This app is like a Social media app blogs are equivalent to posts and like dislike buttons are also there. This app has most of the feature like *Twitter*.  
 This web app handles 3 models-
 - User CRUD
 - Blog CRUD
